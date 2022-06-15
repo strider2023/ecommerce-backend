@@ -1,0 +1,24 @@
+{
+    "restartable": "rs",
+    "ignore": [
+        ".git",
+        "node_modules/",
+        "dist/",
+        "coverage/"
+    ],
+    "watch": [
+        ""
+    ],
+    "execMap": {
+        "ts": "node -r ts-node/register"
+    },
+    "env": {
+        "APP_NAME": "lehlah-bl",
+        "NODE_ENV": "development",
+        "PORT": 4000,
+        "MONGO_DB_URL": "mongodb://localhost:27017/lehlah",
+        "SECRET": "test",
+        "ACCESS_TOKEN_TTL": 100000000
+    },
+    "ext": "js,json,ts"
+}
