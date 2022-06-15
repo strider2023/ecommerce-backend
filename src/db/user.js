@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { composeMongoose } = require('graphql-compose-mongoose');
 
 const UserSchema = new mongoose.Schema(
     {
@@ -33,7 +34,11 @@ const UserSchema = new mongoose.Schema(
 
 const User = mongoose.model('User', UserSchema);
 
+const customizationOptions = { removeFields: ['status', 'createdAt', 'updatedAt', '_id', 'role', 'password'] };
+const UserTC = composeMongoose(User, customizationOptions);
+
 module.exports = {
     User: User,
     UserSchema: UserSchema,
+    UserTC: UserTC
 }

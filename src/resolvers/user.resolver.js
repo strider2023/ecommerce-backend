@@ -1,74 +1,24 @@
-const { AuthTC } = require("../types/auth.type");
-const AuthService = require("../services/auth.service");
+const UserService = require("../services/user.service");
 const { GenericTC } = require("../types/generic.type");
-const { OtpTC } = require("../types/otp.type");
+const { UserTC } = require('../db/user');
 
-const AuthQuery = {
-    auth: {
-        type: AuthTC,
-        resolve: () => { return {} },
+const UserQuery = {
+    me: {
+        type: UserTC,
+        resolve: UserService.me,
     }
 }
 
-const AuthMutations = {
-    login: {
-        type: AuthTC,
-        args: {
-            email: 'String',
-            phone: 'String',
-            password: 'String'
-        },
-        resolve: AuthService.login,
-    },
-    refreshToken: {
-        type: AuthTC,
-        args: {
-            refresh_token: 'String!'
-        },
-        resolve: AuthService.refreshToken,
-    },
-    logout: {
+const UserMutations = {
+    updatePassword: {
         type: GenericTC,
         args: {
-            refresh_token: 'String!'
+            oldPassword: 'String!',
+            newPassword: 'String!'
         },
-        resolve: AuthService.logout,
+        resolve: UserService.updatePassword,
     },
-    resetPassword: {
-        type: GenericTC,
-        args: {
-            email: 'String!'
-        },
-        resolve: AuthService.resetPassword,
-    },
-    sendOtp: {
-        type: OtpTC,
-        args: {
-            phone: 'String!'
-        },
-        resolve: AuthService.sendOtp,
-    },
-    verifyOtp: {
-        type: AuthTC,
-        args: {
-            phone: 'String!',
-            sessionId: 'String!',
-            otp: 'String!'
-        },
-        resolve: AuthService.verifyOtp,
-    },
-    ssoLogin: {
-        type: AuthTC,
-        args: {
-            email: 'String!',
-            ssoToken: 'String!',
-            sso: {
-                type: 'String!',
-                description: "Please use google or apple as enums."
-            }
-        },
-        resolve: AuthService.ssoLogin,
-    },
+    updateUser: UserTC.mongooseResolvers.updateById(),
 };
 
-module.exports = { AuthQuery, AuthMutations };
+module.exports = { UserQuery, UserMutations };
