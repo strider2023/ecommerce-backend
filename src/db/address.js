@@ -1,18 +1,15 @@
 const mongoose = require('mongoose');
-const { composeMongoose } = require('graphql-compose-mongoose');
 
 const AddressSchema = new mongoose.Schema(
     {
-        name: { type: String, required: true },
-        description: String,
-        addressType: String,
-        isPrimary: { type: Boolean, required: true },
+        nickname: { type: String, default: '' },
+        description: { type: String, default: '' },
         address: { type: String, required: true },
         city: { type: String, required: true },
-        landmark: String,
+        landmark: { type: String, default: '' },
         state: { type: String, required: true },
         country: { type: String, required: true },
-        postalCode: { type: Number, required: true },
+        postalCode: { type: Number, required: true, pattern: "^[0-9]{5}(?:-[0-9]{4})?$" },
         status: {
             type: String,
             enum: ['active', 'archived', 'inactive'],
@@ -23,11 +20,7 @@ const AddressSchema = new mongoose.Schema(
 
 const Address = mongoose.model('Address', AddressSchema);
 
-const customizationOptions = {}; // left it empty for simplicity, described below
-const AddressTC = composeMongoose(Address, customizationOptions);
-
 module.exports = {
     AddressSchema: AddressSchema,
     Address: Address,
-    AddressTC: AddressTC,
 }

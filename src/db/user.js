@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const { composeMongoose } = require('graphql-compose-mongoose');
+const { Address } = require('./address');
 
 const UserSchema = new mongoose.Schema(
     {
@@ -22,6 +23,7 @@ const UserSchema = new mongoose.Schema(
         dateOfBirth: { type: Date, default: new Date() },
         avatar: { type: Number, default: -1 },
         metadata: { type: Map, of: mongoose.Schema.Types.Mixed, default: {} },
+        addresses: { type: [Address], default: [], index: false },
         status: {
             type: String,
             enum: ['active', 'archived', 'inactive'],

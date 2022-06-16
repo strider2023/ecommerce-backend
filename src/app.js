@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const { verifyToken } = require('./middlewares/validate');
 const cors = require('cors');
 const logger = require('morgan');
 
@@ -46,6 +47,11 @@ async function startApolloServer(app) {
         playground: process.env.NODE_ENV === 'development' ? true : false,
         instrospection: process.env.NODE_ENV === 'development' ? true : false,
         plugins: [ApolloServerPluginDrainHttpServer({ httpServer }), ApolloServerPluginLandingPageGraphQLPlayground],
+        context: ({ req }) => {
+            const token = req.headers.authorization || '';
+            const user = verifyToken(token);
+            return { user };
+        }
     });
 
     // More required logic for integrating with Express
