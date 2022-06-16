@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { Address } = require('./address');
+const { AddressSchema } = require('./address');
 
 const SellerSchema = new mongoose.Schema(
     {
@@ -27,7 +27,7 @@ const SellerSchema = new mongoose.Schema(
         logo: { type: Number, default: -1 },
         website: { type: String, required: true },
         social: { type: Map, of: mongoose.Schema.Types.String, default: {} },
-        address: { type: Address, required: true, default: '' },
+        address: { type: AddressSchema, required: true, default: '' },
         pan: { type: String, default: '' },
         tax: { type: String, default: '' },
         accountName: { type: String, default: '' },
@@ -41,6 +41,13 @@ const SellerSchema = new mongoose.Schema(
         branchName: { type: String, default: '' },
         policies: { type: Map, of: mongoose.Schema.Types.Mixed, default: {} },
         courierCompanyName: { type: String, default: '' },
+        commissions: { 
+            type: [{ 
+                category: String, 
+                percentage: Number,
+            }], 
+            required: true 
+        },
         status: {
             type: String,
             enum: ['active', 'archived', 'inactive'],

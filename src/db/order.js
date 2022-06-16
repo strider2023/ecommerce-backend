@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { Address } = require('./address');
+const { AddressSchema } = require('./address');
 
 const OrderSchema = new mongoose.Schema(
     {
@@ -12,7 +12,7 @@ const OrderSchema = new mongoose.Schema(
         },
         currency: { type: String, default: '' },
         totalCost: { type: String, default: '' },
-        shippingTo: { type: Address, required: true },
+        shippingTo: { type: AddressSchema, required: true },
         items: {
             type: [{
                 sku: String,

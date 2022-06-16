@@ -10,7 +10,6 @@ const { ApolloServerPluginLandingPageGraphQLPlayground, ApolloServerPluginDrainH
 const http = require("http");
 const graphqlSchema = require("./appSchema");
 
-const uri = process.env.MONGO_DB_URL;
 const options = { useNewUrlParser: true, useUnifiedTopology: true };
 
 const app = express();
@@ -28,7 +27,7 @@ app.get('/', (req, res) => {
     res.send('Server running!');
 });
 
-mongoose.connect(uri, options)
+mongoose.connect(process.env.MONGO_DB_URL, options)
     .then(async () => {
         startApolloServer(app);
     })
