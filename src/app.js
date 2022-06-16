@@ -46,9 +46,9 @@ async function startApolloServer(app) {
         playground: process.env.NODE_ENV === 'development' ? true : false,
         instrospection: process.env.NODE_ENV === 'development' ? true : false,
         plugins: [ApolloServerPluginDrainHttpServer({ httpServer }), ApolloServerPluginLandingPageGraphQLPlayground],
-        context: ({ req }) => {
+        context: async ({ req }) => {
             const token = req.headers.authorization || '';
-            const user = verifyToken(token);
+            const user = await verifyToken(token);
             return { user };
         }
     });

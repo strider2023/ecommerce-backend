@@ -3,9 +3,9 @@ const { GenericTC } = require("../types/generic.type");
 const { UserTC } = require('../db/user');
 
 const UserQuery = {
-    me: {
+    me:  {
         type: UserTC,
-        resolve: UserService.me,
+        resolve: UserService.me
     }
 }
 
