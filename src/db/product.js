@@ -8,13 +8,20 @@ const ProductSchema = new mongoose.Schema(
         description: { type: String, default: '' },
         tags: { type: [String], default: [] },
         categories: {
-            type: [{
-                categoryId: String,
-                name: String,
-                parent: String,
-            }], required: true
+            type: [mongoose.Schema.Types.ObjectId], required: true
         },
         skus: { type: [ProductSKUSchema], required: true },
+        rating: { type: Number, default: 0 },
+        comments: {
+            type: [{
+                _userId: mongoose.Schema.Types.ObjectId,
+                name: String,
+                rating: Number,
+                comment: String,
+                date: { type: Date, default: new Date() }
+            }],
+            default: []
+        },
         status: {
             type: String,
             enum: ['active', 'archived', 'inactive'],

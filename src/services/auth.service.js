@@ -16,7 +16,7 @@ const login = async (_, { email, phone, password }) => {
     if (phone) {
         request['phone'] = phone;
     }
-    console.log(request);
+    // console.log(request);
     const user = await User.findOne({ ...request }).exec();
     if (!user) {
         throw new Error(`Invalid user.`);
