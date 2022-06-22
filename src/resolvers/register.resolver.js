@@ -43,20 +43,28 @@ const RegistrationMutations = {
         },
         resolve: RegisterationService.ssoRegister,
     },
-    registerSupplier: {
+    registerSeller: {
         type: GenericTC,
         args: {
             email: 'String!',
             phone: 'String!',
             password: 'String!',
             orgName: 'String!',
-            ownerName: 'String!',
+            name: 'String!',
             website: 'String!',
-            dateOfEstablishment: 'Date',
+            businessType: 'String!',
             govtRegistrationNumber: 'String!',
             tax: 'String!'
         },
-        resolve: RegisterationService.registerSupplier,
+        resolve: RegisterationService.registerSeller,
+    },
+    changeUserStatus: {
+        type: GenericTC,
+        args: {
+            sellerId: 'ID!',
+            status: 'String!'
+        },
+        resolve: RegisterationService.changeUserStatus,
     }
 };
 

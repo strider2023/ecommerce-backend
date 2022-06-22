@@ -5,13 +5,16 @@ const { UserSession } = require('../db/session');
 
 const authenticate = async (id) => {
     try {
-        const user = await User.findById(id, "email, name, role").exec();
+        const user = await User.findById(id, "email, name").exec();
         const userData = JSON.parse(JSON.stringify(user));
         // console.log(userData._id);
         const customClaims = {
             ...userData,
-            app_access: userData.role.includes("user") === -1 ? false : true,
-            admin_access: userData.role.includes("admin") === -1 ? false : true
+            user_access: userData.role.indexOf('user') > -1 ? true : false,
+            admin_access: userData.role.indexOf('admin') > -1 ? true : false,
+            seller_access: userData.role.indexOf('seller') > -1 ? true : false,
+            influencer_access: userData.role.indexOf('influencer') > -1 ? true : false,
+            stylist_access: userData.role.indexOf('stylist') > -1 ? true : false
         }
         const accessToken = jwt.sign(customClaims, process.env.SECRET, {
             expiresIn: process.env.ACCESS_TOKEN_TTL,

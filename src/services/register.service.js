@@ -28,6 +28,9 @@ const register = async (_, { email, phone, password, name, username, role, gende
     if (role === 'admin') {
         throw new Error(`You do not have the permission to create an ADMIN user.`);
     }
+    if (role === 'seller') {
+        throw new Error(`Please user registerSeller to create a seller account.`);
+    }
     const users = await User.findOne({ email }, "name");
     if (users) {
         throw new Error(`User already exists.`);
@@ -42,19 +45,23 @@ const register = async (_, { email, phone, password, name, username, role, gende
     return { accessToken: token.accessToken, refreshToken: token.refreshToken, email, phone, name, username, role, gender, dateOfBirth, avatar, metadata };
 }
 
-const registerSupplier = async (_, { email, phone, password, orgName, ownerName, website, dateOfEstablishment, govtRegistrationNumber, tax }) => {
+const registerSeller = async (_, { email, phone, password, orgName, name, website, businessType, govtRegistrationNumber, tax }) => {
     const sellers = await Sellers.findOne({ email }, "ownerName");
     if (sellers) {
         throw new Error(`Seller already exists.`);
     }
     const passwordHash = await bcrypt.hash(password, saltRounds);
-    const seller = new Sellers({ email, phone, password: passwordHash, orgName, ownerName, website, dateOfEstablishment, govtRegistrationNumber, tax, status: "inactive" });
+    const user = new User({ email, phone, password: passwordHash, name, username: orgName, role: "seller", status: "inactive" });
+    await user.save();
+    if (!user.id) {
+        throw new Error(`Unable to create seller account.`);
+    }
+    const seller = new Sellers({ _userId: user.id, orgName, website, businessType, govtRegistrationNumber, tax });
     await seller.save();
     if (!seller.id) {
-        throw new Error(`Unable to create seller.`);
+        throw new Error(`Unable to create seller account.`);
     }
-    // Todo Add Brand Information
-    return { msg: "Success", code: 200 };
+    return { msg: "Success. Please wait for activation.", code: 200 };
 }
 
 const ssoRegister = async (_, { email, role, ssoToken, sso }) => {
@@ -72,4 +79,16 @@ const ssoRegister = async (_, { email, role, ssoToken, sso }) => {
     return await getUserDetails(accessToken, refreshToken);
 }
 
-module.exports = { isRegistered, register, ssoRegister, registerSupplier };
+const changeUserStatus = async (_, { sellerId, status }, { user }) => {
+    // Check if admin
+    if (!user.admin_access) {
+        throw new Error(`You do not have permissions make any changes.`);
+    }
+    const updateState = await User.findByIdAndUpdate(sellerId, { status });
+    if (!updateState) {
+        throw new Error(`Could not change user state.`);
+    }
+    return { msg: "Success", code: 200 };
+}
+
+module.exports = { isRegistered, register, ssoRegister, registerSeller, changeUserStatus };

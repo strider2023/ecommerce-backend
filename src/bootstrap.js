@@ -61,7 +61,7 @@ const createAdminUser = async () => {
                 email: process.env.ADMIN_EMAIL,
                 phone: "",
                 password: encryptedPassword,
-                roles: ['admin'],
+                role: ['admin'],
             }
             const user = await User.create(request);
             console.info("Admin User created " + user._id);

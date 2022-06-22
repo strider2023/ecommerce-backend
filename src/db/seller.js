@@ -4,13 +4,9 @@ const { composeMongoose } = require('graphql-compose-mongoose');
 
 const SellerSchema = new mongoose.Schema(
     {
+        _userId: { type: mongoose.Schema.Types.ObjectId, required: true },
         orgName: { type: String, required: true, default: '' },
-        ownerName: { type: String, required: true, default: '' },
-        role: { type: String, default: 'seller' },
         about: { type: String, default: '' },
-        phone: { type: String, required: true, default: '' },
-        email: { type: String, required: true, default: '' },
-        password: { type: String, required: true },
         dateOfEstablishment: { type: Date, default: new Date() },
         businessType: {
             type: [String],
@@ -21,8 +17,8 @@ const SellerSchema = new mongoose.Schema(
         logo: { type: Number, default: -1 },
         website: { type: String, required: true },
         social: { type: Map, of: mongoose.Schema.Types.String, default: {} },
-        primaryAddress: { type: AddressSchema, required: true, default: '' },
-        addresses: { type: [AddressSchema], default: [], index: false },
+        primaryAddress: { type: AddressSchema },
+        branchAddresses: { type: [AddressSchema], default: [], index: false },
         govtRegistrationNumber: { type: String, default: '' },
         tax: { type: String, default: '' },
         accountName: { type: String, default: '' },

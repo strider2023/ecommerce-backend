@@ -5,12 +5,10 @@ const checkAccess = (resolvers) => {
         resolvers[k] = resolvers[k].wrapResolve((next) => async (rp) => {
             const { user } = rp.context;
 
-            rp.beforeRecordMutate = async function (doc, rp) {
-                console.log('mutation called');
+            rp.beforeRecordMutate = (doc, rp) => {
                 if (user) {
                     // Check if admin
-                    const canMakeUpdate = user.roles ? ((user.roles.indexOf('admin') > -1) ? true : false) : false;
-                    // Else throw error
+                    const canMakeUpdate = user.role ? user.admin_access : false;
                     if (!canMakeUpdate) {
                         throw new Error('You do not have permissions make any changes.');
                     }
@@ -26,13 +24,13 @@ const checkAccess = (resolvers) => {
 }
 
 const MetadataQuery = {
-    metadataById: MetadataTC.mongooseResolvers.findById(),
-    metadataPagination: MetadataTC.mongooseResolvers.pagination(),
+    metadataFindById: MetadataTC.mongooseResolvers.findById(),
+    metadataList: MetadataTC.mongooseResolvers.pagination(),
 }
 
 const MetadataMutations = {
     ...checkAccess({
-        metadataCreateOne: MetadataTC.mongooseResolvers.createOne(),
+        metadataCreate: MetadataTC.mongooseResolvers.createOne(),
         metadataUpdateById: MetadataTC.mongooseResolvers.updateById(),
         metadataRemoveById: MetadataTC.mongooseResolvers.removeById(),
     }),
