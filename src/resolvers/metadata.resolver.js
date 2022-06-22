@@ -1,10 +1,13 @@
 const { MetadataTC } = require('../db/metadata');
+const { CategoriesTC } = require('../db/categories');
 const { GenericTC } = require("../types/generic.type");
 const MetadataService = require("../services/metadata.service");
 
 const MetadataQuery = {
     metadataFindById: MetadataTC.mongooseResolvers.findById(),
     metadataList: MetadataTC.mongooseResolvers.pagination(),
+    categoriesFindById: CategoriesTC.mongooseResolvers.findById(),
+    categoriesList: CategoriesTC.mongooseResolvers.pagination(),
 }
 
 const MetadataMutations = {
@@ -31,6 +34,32 @@ const MetadataMutations = {
             status: 'String!',
         },
         resolve: MetadataService.update,
+    },
+    categoryCreate: {
+        type: GenericTC,
+        args: {
+            categoryId: 'String!',
+            parentName: 'String!',
+            parentId: 'String!',
+            categoryName: 'String!',
+            description: 'String',
+            image: 'Int'
+        },
+        resolve: MetadataService.categoryCreate,
+    },
+    categoryUpdate: {
+        type: GenericTC,
+        args: {
+            id: 'ID!',
+            categoryId: 'String!',
+            parentName: 'String!',
+            parentId: 'String!',
+            categoryName: 'String!',
+            description: 'String',
+            image: 'Int',
+            status: 'String!',
+        },
+        resolve: MetadataService.categoryUpdate,
     }
 };
 

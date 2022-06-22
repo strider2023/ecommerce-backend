@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { composeMongoose } = require('graphql-compose-mongoose');
 
 const CategoriesSchema = new mongoose.Schema(
     {
@@ -17,8 +18,11 @@ const CategoriesSchema = new mongoose.Schema(
 );
 
 const Categories = mongoose.model('Categories', CategoriesSchema);
+const customizationOptions = { removeFields: ['createdAt', 'updatedAt'] };
+const CategoriesTC = composeMongoose(Categories, customizationOptions);
 
 module.exports = {
-    CategoriesSchema: CategoriesSchema,
-    Categories: Categories,
+    CategoriesSchema,
+    Categories,
+    CategoriesTC
 }
