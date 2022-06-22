@@ -1,27 +1,6 @@
 const { MetadataTC } = require('../db/metadata');
-
-const checkAccess = (resolvers) => {
-    Object.keys(resolvers).forEach((k) => {
-        resolvers[k] = resolvers[k].wrapResolve((next) => async (rp) => {
-            const { user } = rp.context;
-
-            rp.beforeRecordMutate = (doc, rp) => {
-                if (user) {
-                    // Check if admin
-                    const canMakeUpdate = user.role ? user.admin_access : false;
-                    if (!canMakeUpdate) {
-                        throw new Error('You do not have permissions make any changes.');
-                    }
-                } else {
-                    throw new Error('You must be logged in to update this data.');
-                }
-            }
-
-            return next(rp);
-        });
-    });
-    return resolvers
-}
+const { GenericTC } = require("../types/generic.type");
+const MetadataService = require("../services/metadata.service");
 
 const MetadataQuery = {
     metadataFindById: MetadataTC.mongooseResolvers.findById(),
@@ -29,11 +8,30 @@ const MetadataQuery = {
 }
 
 const MetadataMutations = {
-    ...checkAccess({
-        metadataCreate: MetadataTC.mongooseResolvers.createOne(),
-        metadataUpdateById: MetadataTC.mongooseResolvers.updateById(),
-        metadataRemoveById: MetadataTC.mongooseResolvers.removeById(),
-    }),
+    metadataCreate: {
+        type: GenericTC,
+        args: {
+            type: 'String!',
+            name: 'String!',
+            description: 'String',
+            key: 'String',
+            image: 'Int'
+        },
+        resolve: MetadataService.create,
+    },
+    metadataUpdate: {
+        type: GenericTC,
+        args: {
+            id: 'ID!',
+            type: 'String!',
+            name: 'String!',
+            description: 'String',
+            key: 'String',
+            image: 'Int',
+            status: 'String!',
+        },
+        resolve: MetadataService.update,
+    }
 };
 
 module.exports = { MetadataQuery, MetadataMutations };

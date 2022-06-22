@@ -5,7 +5,7 @@ const { UserSession } = require('../db/session');
 
 const authenticate = async (id) => {
     try {
-        const user = await User.findById(id, "email, name").exec();
+        const user = await User.findById(id, "email, name, role").exec();
         const userData = JSON.parse(JSON.stringify(user));
         // console.log(userData._id);
         const customClaims = {

@@ -17,7 +17,7 @@ const MetadataSchema = new mongoose.Schema(
 );
 
 const Metadata = mongoose.model('Metadata', MetadataSchema);
-const customizationOptions = { };
+const customizationOptions = { removeFields: ['createdAt', 'updatedAt'] };
 const MetadataTC = composeMongoose(Metadata, customizationOptions);
 
 module.exports = {

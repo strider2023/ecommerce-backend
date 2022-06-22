@@ -10,14 +10,6 @@ const SellerQuery = {
 }
 
 const SellerMutations = {
-    updateSellerPassword: {
-        type: GenericTC,
-        args: {
-            oldPassword: 'String!',
-            newPassword: 'String!'
-        },
-        resolve: SellerService.updateSellerPassword,
-    },
     updateSellerInfo: SellerTC.mongooseResolvers.updateById(),
 };
 

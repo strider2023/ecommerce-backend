@@ -50,7 +50,7 @@ const SellerSchema = new mongoose.Schema(
 
 const Sellers = mongoose.model('Sellers', SellerSchema);
 
-const customizationOptions = {};
+const customizationOptions = { removeFields: ['createdAt', 'updatedAt'] };
 const SellerTC = composeMongoose(Sellers, customizationOptions);
 
 module.exports = { SellerSchema, Sellers, SellerTC }
