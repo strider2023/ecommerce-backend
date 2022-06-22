@@ -43,6 +43,21 @@ const RegistrationMutations = {
         },
         resolve: RegisterationService.ssoRegister,
     },
+    registerSupplier: {
+        type: GenericTC,
+        args: {
+            email: 'String!',
+            phone: 'String!',
+            password: 'String!',
+            orgName: 'String!',
+            ownerName: 'String!',
+            website: 'String!',
+            dateOfEstablishment: 'Date',
+            govtRegistrationNumber: 'String!',
+            tax: 'String!'
+        },
+        resolve: RegisterationService.registerSupplier,
+    }
 };
 
 module.exports = { RegistrationQuery, RegistrationMutations };

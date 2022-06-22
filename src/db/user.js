@@ -8,7 +8,7 @@ const UserSchema = new mongoose.Schema(
         username: { type: String, trim: true, toLowerCase: true, default: '' },
         role: {
             type: [String],
-            enum: ['admin', 'seller', 'user'],
+            enum: ['admin', 'stylist', 'user', 'influencer'],
             required: true,
             default: ['user']
         },
@@ -39,8 +39,4 @@ const User = mongoose.model('User', UserSchema);
 const customizationOptions = { removeFields: ['status', 'createdAt', 'updatedAt', '_id', 'role', 'password'] };
 const UserTC = composeMongoose(User, customizationOptions);
 
-module.exports = {
-    User: User,
-    UserSchema: UserSchema,
-    UserTC: UserTC
-}
+module.exports = { User, UserSchema, UserTC }

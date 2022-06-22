@@ -3,17 +3,20 @@ const { schemaComposer } = require('graphql-compose');
 const { AuthQuery, AuthMutations } = require("./resolvers/auth.resolver");
 const { RegistrationQuery, RegistrationMutations } = require("./resolvers/register.resolver");
 const { UserQuery, UserMutations } = require("./resolvers/user.resolver");
+const { SellerQuery, SellerMutations } = require("./resolvers/seller.resolver");
 
 schemaComposer.Query.addFields({
     ...AuthQuery,
     ...RegistrationQuery,
     ...UserQuery,
+    ...SellerQuery,
 });
 
 schemaComposer.Mutation.addFields({
     ...AuthMutations,
     ...RegistrationMutations,
     ...UserMutations,
+    ...SellerMutations,
 });
 
 const graphqlSchema = schemaComposer.buildSchema();

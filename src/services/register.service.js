@@ -1,5 +1,6 @@
 const { authenticate } = require('../utils/auth.util');
 const { User } = require('../db/user');
+const { Sellers } = require('../db/seller');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 
@@ -23,9 +24,8 @@ const isRegistered = async (_, { email, phone }) => {
     return { msg: "Success", code: 200 };
 }
 
-
 const register = async (_, { email, phone, password, name, username, role, gender, dateOfBirth, avatar, metadata }) => {
-    if (role === 'ADMIN') {
+    if (role === 'admin') {
         throw new Error(`You do not have the permission to create an ADMIN user.`);
     }
     const users = await User.findOne({ email }, "name");
@@ -40,6 +40,21 @@ const register = async (_, { email, phone, password, name, username, role, gende
     }
     const token = await authenticate(user._id);
     return { accessToken: token.accessToken, refreshToken: token.refreshToken, email, phone, name, username, role, gender, dateOfBirth, avatar, metadata };
+}
+
+const registerSupplier = async (_, { email, phone, password, orgName, ownerName, website, dateOfEstablishment, govtRegistrationNumber, tax }) => {
+    const sellers = await Sellers.findOne({ email }, "ownerName");
+    if (sellers) {
+        throw new Error(`Seller already exists.`);
+    }
+    const passwordHash = await bcrypt.hash(password, saltRounds);
+    const seller = new Sellers({ email, phone, password: passwordHash, orgName, ownerName, website, dateOfEstablishment, govtRegistrationNumber, tax, status: "inactive" });
+    await seller.save();
+    if (!seller.id) {
+        throw new Error(`Unable to create seller.`);
+    }
+    // Todo Add Brand Information
+    return { msg: "Success", code: 200 };
 }
 
 const ssoRegister = async (_, { email, role, ssoToken, sso }) => {
@@ -57,4 +72,4 @@ const ssoRegister = async (_, { email, role, ssoToken, sso }) => {
     return await getUserDetails(accessToken, refreshToken);
 }
 
-module.exports = { isRegistered, register, ssoRegister };
+module.exports = { isRegistered, register, ssoRegister, registerSupplier };
