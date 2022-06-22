@@ -18,7 +18,9 @@
         "PORT": 4000,
         "MONGO_DB_URL": "mongodb://localhost:27017/lehlah",
         "SECRET": "test",
-        "ACCESS_TOKEN_TTL": 100000000
+        "ACCESS_TOKEN_TTL": 100000000,
+        "ADMIN_EMAIL": "test@admin.com",
+        "ADMIN_PASSWORD": "test1234"
     },
     "ext": "js,json,ts"
 }

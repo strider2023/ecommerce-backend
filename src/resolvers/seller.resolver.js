@@ -3,7 +3,7 @@ const { GenericTC } = require("../types/generic.type");
 const { SellerTC } = require('../db/seller');
 
 const SellerQuery = {
-    me:  {
+    seller:  {
         type: SellerTC,
         resolve: SellerService.me
     }
@@ -17,7 +17,8 @@ const SellerMutations = {
             newPassword: 'String!'
         },
         resolve: SellerService.updateSellerPassword,
-    }
+    },
+    updateSellerInfo: SellerTC.mongooseResolvers.updateById(),
 };
 
 module.exports = { SellerQuery, SellerMutations };

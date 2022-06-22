@@ -18,7 +18,7 @@ const UserMutations = {
         },
         resolve: UserService.updatePassword,
     },
-    updateUser: UserTC.mongooseResolvers.updateById(),
+    updateUserInfo: UserTC.mongooseResolvers.updateById(),
 };
 
 module.exports = { UserQuery, UserMutations };
