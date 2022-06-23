@@ -29,6 +29,7 @@
     "mongoose": "^6.3.8",
     "morgan": "^1.10.0",
     "nanoid": "^3.3.4",
+    "node-cron": "^3.0.1",
     "uuidv4": "^6.2.13",
     "verify-apple-token": "^2.1.0",
     "winston": "^3.7.2"
