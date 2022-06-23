@@ -32,13 +32,6 @@ const SellerSchema = new mongoose.Schema(
         branchName: { type: String, default: '' },
         policies: { type: Map, of: mongoose.Schema.Types.Mixed, default: {} },
         courierCompanyName: { type: String, default: '' },
-        commissions: {
-            type: [{
-                category: String,
-                percentage: Number,
-            }],
-            required: true
-        },
         metadata: { type: Map, of: mongoose.Schema.Types.Mixed, default: {} },
         status: {
             type: String,
