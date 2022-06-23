@@ -3,7 +3,7 @@ const { ApolloServerPluginLandingPageGraphQLPlayground, ApolloServerPluginDrainH
 const http = require("http");
 const bcrypt = require("bcrypt");
 
-const { verifyToken } = require('./middlewares/validate');
+const { verifyToken } = require('./utils/validate');
 const graphqlSchema = require("./appSchema");
 const { accessFile, fileUpload, removeFile } = require("./routes/files");
 const { User } = require("./db/user");
