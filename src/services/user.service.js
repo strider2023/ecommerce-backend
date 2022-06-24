@@ -30,4 +30,20 @@ const updatePassword = async (_, { oldPassword, newPassword }, { user }) => {
     return { msg: "Success", code: 200 };
 }
 
-module.exports = { me, updatePassword };
+const addToBookmarks = async (_, {}, { user }) => {
+    const userDB = await User.findById(user._id).exec();
+    if (!userDB) {
+        throw new Error(`User not found.`);
+    }
+    return JSON.parse(JSON.stringify(userDB));
+}
+
+const removeFromBookmarks = async (_, {}, { user }) => {
+    const userDB = await User.findById(user._id).exec();
+    if (!userDB) {
+        throw new Error(`User not found.`);
+    }
+    return JSON.parse(JSON.stringify(userDB));
+}
+
+module.exports = { me, updatePassword, removeFromBookmarks, addToBookmarks };
