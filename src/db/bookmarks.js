@@ -3,12 +3,13 @@ const { composeMongoose } = require('graphql-compose-mongoose');
 
 const BookmarkSchema = new mongoose.Schema(
     {
-        _userId: { type: mongoose.Schema.Types.ObjectId, default: '' },
+        _userId: { type: mongoose.Schema.Types.ObjectId, required: true, default: '' },
+        bookmarkCollectionName: { type: String, required: true, default: '' },
         items: {
             type: [{
                 _skuId: mongoose.Schema.Types.ObjectId,
                 name: String,
-                image: Number,
+                image: {type: Number, default: -1},
                 _productId: mongoose.Schema.Types.ObjectId
             }], required: true, default: []
         },

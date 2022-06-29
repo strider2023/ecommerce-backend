@@ -35,6 +35,13 @@ const MetadataMutations = {
         },
         resolve: MetadataService.update,
     },
+    metadataDelete: {
+        type: GenericTC,
+        args: {
+            id: 'ID!',
+        },
+        resolve: MetadataService.metadataDelete,
+    },
     categoryCreate: {
         type: GenericTC,
         args: {
@@ -60,6 +67,13 @@ const MetadataMutations = {
             status: 'String!',
         },
         resolve: MetadataService.categoryUpdate,
+    },
+    categoryDelete: {
+        type: GenericTC,
+        args: {
+            id: 'ID!',
+        },
+        resolve: MetadataService.categoryDelete,
     }
 };
 

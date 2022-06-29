@@ -24,6 +24,17 @@ const update = async (_, { id, type, name, description, key, image, status }, { 
     return { msg: "Success", code: 200 };
 }
 
+const metadataDelete = async (_, { id }, { user }) => {
+    if (!user.admin_access) {
+        throw new Error('You do not have permissions make any changes.');
+    }
+    const metadata = await Metadata.findByIdAndDelete(id);
+    if (!metadata) {
+        throw new Error(`Could not remove metadata.`);
+    }
+    return { msg: "Success", code: 200 };
+}
+
 const categoryCreate = async (_, { categoryId, parentName, parentId, categoryName, description, image }, { user }) => {
     if (!user.admin_access) {
         throw new Error('You do not have permissions make any changes.');
@@ -47,4 +58,15 @@ const categoryUpdate = async (_, { id, categoryId, parentName, parentId, categor
     return { msg: "Success", code: 200 };
 }
 
-module.exports = { create, update, categoryCreate, categoryUpdate };
+const categoryDelete = async (_, { id }, { user }) => {
+    if (!user.admin_access) {
+        throw new Error('You do not have permissions make any changes.');
+    }
+    const category = await Categories.findByIdAndDelete(id);
+    if (!category) {
+        throw new Error(`Could not remove category.`);
+    }
+    return { msg: "Success", code: 200 };
+}
+
+module.exports = { create, update, metadataDelete, categoryCreate, categoryUpdate, categoryDelete };

@@ -24,23 +24,43 @@ const UserMutations = {
         resolve: UserService.updatePassword,
     },
     updateUserInfo: UserTC.mongooseResolvers.updateById(),
-    addToBookmarks: {
+    createNewBookmark: {
         type: GenericTC,
         args: {
+            bookmarkCollectionName: 'String!',
             skuId: 'ID!',
             productId: 'ID!',
             name: 'String!',
             image: 'Int'
         },
-        resolve: UserService.addToBookmarks,
+        resolve: UserService.createNewBookmark,
     },
-    removeFromBookmarks: {
+    updateBookmarkCollectionName: {
         type: GenericTC,
         args: {
-            skuId: 'ID!',
-            productId: 'ID!'
+            bookmarkCollectionName: 'String!',
+            bookmarkId: 'ID!',
         },
-        resolve: UserService.removeFromBookmarks,
+        resolve: UserService.updateBookmarkCollectionName,
+    },
+    updateBookmarks: {
+        type: GenericTC,
+        args: {
+            isDelete: 'Boolean!',
+            bookmarkId:  'ID!',
+            skuId: 'ID!',
+            productId: 'ID!',
+            name: 'String',
+            image: 'Int'
+        },
+        resolve: UserService.updateBookmarks,
+    },
+    removeBookmarksCollection: {
+        type: GenericTC,
+        args: {
+            bookmarkId:  'ID!'
+        },
+        resolve: UserService.removeBookmarksCollection,
     },
 };
 
