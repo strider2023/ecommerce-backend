@@ -2,10 +2,12 @@ const mongoose = require('mongoose');
 
 const AssetsSchema = new mongoose.Schema(
     {
-        assetId: { type: Number, required: true },
-        size: { type: Number, default: 0 },
-        mimeType: { type: String, required: true },
-        location: { type: String, required: true },
+        assetId: { type: Number, unique: true, required: true },
+        size: { type: Number, default: 0, required: true },
+        mimetype: { type: String, required: true },
+        path: { type: String, required: true },
+        originalname: { type: String, required: true},
+        filename: { type: String, required: true},
         storageType: {
             type: String,
             enum: ['local', 's3'],

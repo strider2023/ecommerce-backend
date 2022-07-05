@@ -20,7 +20,8 @@
         "SECRET": "test",
         "ACCESS_TOKEN_TTL": 100000000,
         "ADMIN_EMAIL": "test@admin.com",
-        "ADMIN_PASSWORD": "test1234"
+        "ADMIN_PASSWORD": "test1234",
+        "STORAGE_TYPE": "local"
     },
     "ext": "js,json,ts"
 }
