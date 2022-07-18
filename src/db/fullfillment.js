@@ -8,6 +8,7 @@ const FullfillmentSchema = new mongoose.Schema(
         _orderId: { type: mongoose.Schema.Types.ObjectId, required: true },
         status: {
             type: String,
+            default: 'active',
             enum: ['active', 'archived', 'inactive'],
         },
     },

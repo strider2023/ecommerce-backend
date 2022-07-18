@@ -38,6 +38,7 @@ const CollectionsSchema = new mongoose.Schema(
         },
         status: {
             type: String,
+            default: 'active',
             enum: ['active', 'archived', 'inactive'],
         },
     },

@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const ProductSKUSchema = new mongoose.Schema(
     {
-        sku: { type: Stirng, required: true, unique: true },
+        sku: { type: String, required: true, unique: true },
         price: { type: { base: String, currency: String }, required: true },
         quantity: { type: Number, required: true },
         weight: { type: Number, required: true },
@@ -13,6 +13,7 @@ const ProductSKUSchema = new mongoose.Schema(
         status: {
             type: String,
             enum: ['active', 'archived', 'inactive'],
+            default: 'active',
         },
     },
     { timestamps: true }

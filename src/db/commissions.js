@@ -17,6 +17,7 @@ const CommissionsSchema = new mongoose.Schema(
         metadata: { type: Map, of: mongoose.Schema.Types.Mixed, default: {} },
         status: {
             type: String,
+            default: 'active',
             enum: ['active', 'archived', 'inactive'],
         },
     },

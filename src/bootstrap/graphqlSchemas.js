@@ -5,6 +5,7 @@ const { RegistrationQuery, RegistrationMutations } = require("../resolvers/regis
 const { UserQuery, UserMutations } = require("../resolvers/user.resolver");
 const { SellerQuery, SellerMutations } = require("../resolvers/seller.resolver");
 const { MetadataQuery, MetadataMutations } = require("../resolvers/metadata.resolver");
+const { ProductQuery, ProductMutations } = require("../resolvers/product.resolver");
 
 schemaComposer.Query.addFields({
     ...AuthQuery,
@@ -12,6 +13,7 @@ schemaComposer.Query.addFields({
     ...UserQuery,
     ...SellerQuery,
     ...MetadataQuery,
+    ...ProductQuery,
 });
 
 schemaComposer.Mutation.addFields({
@@ -20,6 +22,7 @@ schemaComposer.Mutation.addFields({
     ...UserMutations,
     ...SellerMutations,
     ...MetadataMutations,
+    ...ProductMutations,
 });
 
 const graphqlSchema = schemaComposer.buildSchema();

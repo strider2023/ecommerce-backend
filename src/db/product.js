@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const { ProductSKUSchema } = require('./productSKU');
+const { composeMongoose } = require('graphql-compose-mongoose');
 
 const ProductSchema = new mongoose.Schema(
     {
@@ -24,6 +25,7 @@ const ProductSchema = new mongoose.Schema(
         },
         status: {
             type: String,
+            default: 'active',
             enum: ['active', 'archived', 'inactive'],
         },
     },
@@ -32,7 +34,11 @@ const ProductSchema = new mongoose.Schema(
 
 const Products = mongoose.model('Products', ProductSchema);
 
+const customizationOptions = { removeFields: ['createdAt', 'updatedAt'] };
+const ProductsTC = composeMongoose(Products, customizationOptions);
+
 module.exports = {
-    ProductSchema: ProductSchema,
-    Products: Products,
+    ProductSchema,
+    Products,
+    ProductsTC
 }

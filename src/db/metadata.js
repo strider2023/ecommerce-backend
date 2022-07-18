@@ -10,6 +10,7 @@ const MetadataSchema = new mongoose.Schema(
         image: { type: Number, default: -1 },
         status: {
             type: String,
+            default: 'active',
             enum: ['active', 'archived', 'inactive'],
         },
     },

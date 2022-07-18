@@ -13,6 +13,11 @@ const BookmarkSchema = new mongoose.Schema(
                 _productId: mongoose.Schema.Types.ObjectId
             }], required: true, default: []
         },
+        status: {
+            type: String,
+            enum: ['active', 'archived', 'inactive'],
+            default: 'active',
+        },
     },
     { timestamps: true }
 );
