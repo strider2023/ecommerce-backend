@@ -4,7 +4,7 @@ const { composeMongoose } = require('graphql-compose-mongoose');
 
 const ProductSchema = new mongoose.Schema(
     {
-        _sellerId: { type: mongoose.Schema.Types.ObjectId, required: true },
+        _sellerId: { type: mongoose.Schema.Types.ObjectId },
         name: { type: String, default: '' },
         description: { type: String, default: '' },
         tags: { type: [String], default: [] },
@@ -25,8 +25,9 @@ const ProductSchema = new mongoose.Schema(
         },
         status: {
             type: String,
-            default: 'active',
-            enum: ['active', 'archived', 'inactive'],
+            default: 'draft',
+            required: true,
+            enum: ['active', 'draft', 'archived', 'inactive'],
         },
     },
     { timestamps: true }
