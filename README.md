@@ -3,7 +3,7 @@
 
 [![N|Solid](https://static.callstack.com/wp/2018/07/28164133/1_TUzarF1NBCpga-8ahqzNHw.png)](https://www.apollographql.com/docs/)
 
-The orders service is built on GraphQL.
+A generic social e-commerce backend that leverages GraphQL for communication.
 
 - Features
 - Dependencies
@@ -12,8 +12,11 @@ The orders service is built on GraphQL.
 
 ## Features
 
-- Create and manage businesses
-- Check business metrics
+- Create and manage users and roles
+- Create and manage products
+- Create and manage metadata information
+- Create and manage user data like bookmarks
+- Email notification using nodemailer
 - JWT token based authentication
 
 ## Dependencies
@@ -35,4 +38,4 @@ For running the code in your local machine following steps are required,
 
 ## License
 
-Paid Software
+In development stuffs are always free :)
