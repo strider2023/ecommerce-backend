@@ -21,7 +21,13 @@
         "ACCESS_TOKEN_TTL": 100000000,
         "ADMIN_EMAIL": "test@admin.com",
         "ADMIN_PASSWORD": "test1234",
-        "STORAGE_TYPE": "local"
+        "STORAGE_TYPE": "local",
+        "EMAIL_NOTIFICATION_ENABLED": "yes",
+        "EMAIL_HOST": "smtp.ethereal.email",
+        "EMAIL_PORT": 587,
+        "EMAIL_SECURE": false,
+        "EMAIL_USERNAME": "electa.pouros26@ethereal.email",
+        "EMAIL_PASSWORD": "mbKWwyZ1ekYZUGyNUc"
     },
     "ext": "js,json,ts"
 }

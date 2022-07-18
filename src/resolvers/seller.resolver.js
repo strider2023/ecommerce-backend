@@ -10,7 +10,9 @@ const SellerQuery = {
 }
 
 const SellerMutations = {
-    updateSellerInfo: SellerTC.mongooseResolvers.updateById(),
+    updateSellerInfo: {
+        type: GenericTC,
+    }
 };
 
 module.exports = { SellerQuery, SellerMutations };

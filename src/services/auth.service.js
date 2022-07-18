@@ -2,6 +2,8 @@ const { authenticate } = require('../utils/auth.util');
 const { User } = require('../db/user');
 const { UserSession } = require('../db/session');
 const bcrypt = require('bcrypt');
+const { RESET_PASSWORD } = require('../notifications/templates/auth.templates');
+const notification = require('../notifications');
 // var serviceAccount = require("../firebaseService.json");
 // var admin = require("firebase-admin");
 // var defaultApp = admin.initializeApp({
@@ -65,12 +67,22 @@ const logout = async (_, { refreshToken }) => {
     return { msg: "Success", code: 200 };
 }
 
-const resetPassword = async (_, { email }) => {
-    let request = { email: email };
-    if (!response) {
-        throw new Error(`Invalid email.`);
+const resetPassword = async (_, { email, phone }) => {
+    let request = { status: "active" };
+    if (email) {
+        request['email'] = email;
     }
-    return { msg: "Success" };
+    if (phone) {
+        request['phone'] = phone;
+    }
+    // console.log(request);
+    const user = await User.findOne({ ...request }).exec();
+    if (!user) {
+        throw new Error(`Invalid user.`);
+    }
+    const userData = JSON.parse(JSON.stringify(user));
+    await notification.sendMail({from: "from@domain.com", to: userData.email, template: RESET_PASSWORD({link: "https://www.google.co.in/", name: userData.name})});
+    return { msg: "Success", code: 200 };
 }
 
 const sendOtp = async (_, { phone }) => {

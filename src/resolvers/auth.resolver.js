@@ -37,7 +37,8 @@ const AuthMutations = {
     resetPassword: {
         type: GenericTC,
         args: {
-            email: 'String!'
+            email: 'String',
+            phone: 'String',
         },
         resolve: AuthService.resetPassword,
     },
