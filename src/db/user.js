@@ -24,6 +24,14 @@ const UserSchema = new mongoose.Schema(
         avatar: { type: Number, default: -1 },
         metadata: { type: Map, of: mongoose.Schema.Types.Mixed, default: {} },
         addresses: { type: [AddressSchema], default: [], index: false },
+        resetPassword: {
+            type: [{
+                resetUUID: { type: String, default: '' },
+                expires: { type: Date, default: new Date() },
+                isActive: { type: Boolean, default: false }
+            }],
+            default: []
+        },
         status: {
             type: String,
             enum: ['active', 'archived', 'inactive'],
