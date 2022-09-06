@@ -1,16 +1,12 @@
-const { authenticate } = require('../utils/auth.util');
+const { authenticate, generateOtp } = require('../utils/auth.util');
 const { User } = require('../db/user');
 const { UserSession } = require('../db/session');
+const { Otp } = require('../db/otp');
 const bcrypt = require('bcrypt');
-const { RESET_PASSWORD } = require('../notifications/templates/auth.templates');
+const { RESET_PASSWORD, EMAIL_OTP } = require('../notifications/templates/auth.templates');
 const notification = require('../notifications');
 const { uuid } = require('uuidv4');
 const saltRounds = 10;
-// var serviceAccount = require("../firebaseService.json");
-// var admin = require("firebase-admin");
-// var defaultApp = admin.initializeApp({
-//     credential: admin.credential.cert(serviceAccount)
-// });
 
 const login = async (_, { email, phone, password }) => {
     let request = { status: "active" };
@@ -105,7 +101,7 @@ const resetPassword = async (_, { resetId, password }) => {
     const userData = JSON.parse(JSON.stringify(user));
     let resetLinkDetails = null;
     for (const resetData of userData.resetPassword) {
-        if(resetData.resetUUID === resetId) {
+        if (resetData.resetUUID === resetId) {
             resetLinkDetails = resetData;
             break;
         }
@@ -126,58 +122,89 @@ const resetPassword = async (_, { resetId, password }) => {
         throw new Error(`Could not update password.`);
     }
     // Mark reset id as used
-    const updateResetPassword = await User.updateOne({_id : userData._id, "resetPassword.resetUUID": resetId}, {
+    const updateResetPassword = await User.updateOne({ _id: userData._id, "resetPassword.resetUUID": resetId }, {
         $set: {
             "resetPassword.$.isActive": false
-         }
+        }
     });
-    // console.log(updateResetPassword);
-    return { msg: "Password link sent to registered email.", code: 200 };
+    if (!updateResetPassword) {
+        console.error("Error while updating flag.");
+    }
+    return { msg: "Password successfully updated.", code: 200 };
 }
 
-const sendOtp = async (_, { phone }) => {
-    const response = await axios.get(`https://2factor.in/API/V1/${process.env.SMSAPIKEY}/SMS/${phone}/AUTOGEN`);
-    console.log(response.data);
-    if (!response) {
-        throw new Error(`Error while generating otp.`);
+const sendOtp = async (_, { email, phone }) => {
+    let request = { status: "active" };
+    if (email) {
+        request['email'] = email;
     }
-    return { msg: "Success", sessionId: response.data.Details };
+    if (phone) {
+        request['phone'] = phone;
+    }
+    // console.log(request);
+    const user = await User.findOne({ ...request }).exec();
+    const userData = JSON.parse(JSON.stringify(user));
+    const generatedOtp = await generateOtp();
+    // Expires in 30 mins
+    const otpExpiration = new Date(new Date().setDate(new Date().getMinutes() + 30));
+    const otp = new Otp({ _userId: user._id, otp: generatedOtp, expires: otpExpiration, status: "active" });
+    await otp.save();
+    if (!otp) {
+        console.error("Error saving otp.");
+    }
+    await notification.sendMail({ from: "from@domain.com", to: userData.email, template: EMAIL_OTP({ otp: generatedOtp, name: userData.name }) });
+    return { msg: "Otp sent to registered email and phone.", code: 200 };
 }
 
-const verifyOtp = async (_, { phone, sessionId, otp }) => {
-    const response = await axios.get(`https://2factor.in/API/V1/${process.env.SMSAPIKEY}/SMS/VERIFY/${sessionId}/${otp}`);
-    console.log(response.data);
-    if (!response) {
-        throw new Error(`Invalid otp verification details.`);
+const verifyOtp = async (_, { email, phone, otp }) => {
+    let request = { status: "active" };
+    if (email) {
+        request['email'] = email;
     }
-    if (response.data.Status !== 'Success') {
-        throw new Error(`Invalid otp.`);
+    if (phone) {
+        request['phone'] = phone;
     }
-    const query = 'SELECT u.id, u.email FROM public.directus_users AS u WHERE u.phone=$1;';
-    const user = await db.query(query, [phone]);
-    const userEmail = user.rows[0].email;
-    const { accessToken, refreshToken } = await authUtil.authenticate(userEmail);
-    return await getUserDetails(accessToken, refreshToken);
+    // console.log(request);
+    const user = await User.findOne({ ...request }).exec();
+    const validOtp = await Otp.findOne({ otp, status: "active", expires: { $lte: new Date() } }).exec();
+    if (!validOtp) {
+        console.error("Otp incorrect or invalid.");
+    }
+    const userData = JSON.parse(JSON.stringify(user));
+    const token = await authenticate(user._id);
+    return {
+        accessToken: token.accessToken,
+        refreshToken: token.refreshToken,
+        email: userData.email,
+        phone: userData.phone,
+        name: userData.name,
+        username: userData.username,
+        role: userData.role,
+        gender: userData.gender,
+        dateOfBirth: userData.dateOfBirth,
+        avatar: userData.avatar,
+        metadata: userData.metadata
+    };
 }
 
 const ssoLogin = async (_, { email, ssoToken, sso }) => {
-    const query = 'SELECT u.id, u.role FROM public.directus_users AS u WHERE u.email=$1;';
-    const user = await db.query(query, [email]);
-    if (user.rows.length === 0) {
-        throw new Error(`User with the given email id does not exists. Please register first.`);
-    }
-    if (sso !== 'google' || sso !== 'apple') {
-        throw new Error(`Invalid sso type. Please use google or apple.`);
-    }
-    if (sso === 'google') {
-        const verifyUser = await admin.auth().verifyIdToken(ssoToken);
-        console.log("verifyUser", verifyUser);
-        if (verifyUser && verifyUser.email != email) {
-            throw new Error(`SSO signature does not match with the email id provided.`);
-        }
-    }
-    const { accessToken, refreshToken } = await authUtil.authenticate(email);
-    return await getUserDetails(accessToken, refreshToken);
+    let request = { email, status: "active" };
+    const user = await User.findOne({ ...request }).exec();
+    const userData = JSON.parse(JSON.stringify(user));
+    const token = await authenticate(user._id);
+    return {
+        accessToken: token.accessToken,
+        refreshToken: token.refreshToken,
+        email: userData.email,
+        phone: userData.phone,
+        name: userData.name,
+        username: userData.username,
+        role: userData.role,
+        gender: userData.gender,
+        dateOfBirth: userData.dateOfBirth,
+        avatar: userData.avatar,
+        metadata: userData.metadata
+    };
 }
 
 module.exports = { login, refreshToken, logout, recoverPassword, resetPassword, sendOtp, verifyOtp, ssoLogin };

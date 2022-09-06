@@ -2,6 +2,7 @@ const { nanoid } = require('nanoid');
 const jwt = require('jsonwebtoken');
 const { User } = require('../db/user');
 const { UserSession } = require('../db/session');
+const { Otp } = require('../db/otp');
 
 const authenticate = async (id) => {
     try {
@@ -42,4 +43,13 @@ const authenticate = async (id) => {
     }
 }
 
-module.exports = { authenticate };
+const generateOtp = async () => {
+    const otpId = Math.floor(Math.random() * 9000000) + 1000000;
+    const otp = await Otp.findOne({ otpId, status: 'active' }).exec();
+    if (otp) {
+        generateOtp();
+    }
+    return otpId;
+}
+
+module.exports = { authenticate, generateOtp };

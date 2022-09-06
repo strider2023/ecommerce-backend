@@ -50,34 +50,35 @@ const AuthMutations = {
         },
         resolve: AuthService.resetPassword,
     },
-    // sendOtp: {
-    //     type: OtpTC,
-    //     args: {
-    //         phone: 'String!'
-    //     },
-    //     resolve: AuthService.sendOtp,
-    // },
-    // verifyOtp: {
-    //     type: AuthTC,
-    //     args: {
-    //         phone: 'String!',
-    //         sessionId: 'String!',
-    //         otp: 'String!'
-    //     },
-    //     resolve: AuthService.verifyOtp,
-    // },
-    // ssoLogin: {
-    //     type: AuthTC,
-    //     args: {
-    //         email: 'String!',
-    //         ssoToken: 'String!',
-    //         sso: {
-    //             type: 'String!',
-    //             description: "Please use google or apple as enums."
-    //         }
-    //     },
-    //     resolve: AuthService.ssoLogin,
-    // },
+    sendOtp: {
+        type: GenericTC,
+        args: {
+            email: 'String',
+            phone: 'String'
+        },
+        resolve: AuthService.sendOtp,
+    },
+    verifyOtp: {
+        type: AuthTC,
+        args: {
+            email: 'String',
+            phone: 'String',
+            otp: 'String!'
+        },
+        resolve: AuthService.verifyOtp,
+    },
+    ssoLogin: {
+        type: AuthTC,
+        args: {
+            email: 'String!',
+            ssoToken: 'String!',
+            sso: {
+                type: 'String!',
+                description: "Please use google or apple as enums."
+            }
+        },
+        resolve: AuthService.ssoLogin,
+    },
 };
 
 module.exports = { AuthQuery, AuthMutations };

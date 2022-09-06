@@ -4,7 +4,7 @@ const OtpTC = schemaComposer.createObjectTC({
     name: 'OtpTC',
     fields: {
         msg: 'String',
-        sessionId: 'String!'
+        otp: 'String!'
     },
 });
 
