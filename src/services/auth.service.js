@@ -2,9 +2,11 @@ const { authenticate, generateOtp } = require('../utils/auth.util');
 const { User } = require('../db/user');
 const { UserSession } = require('../db/session');
 const { Otp } = require('../db/otp');
-const bcrypt = require('bcrypt');
 const { RESET_PASSWORD, EMAIL_OTP } = require('../notifications/templates/auth.templates');
 const notification = require('../notifications');
+
+const moment = require('moment');
+const bcrypt = require('bcrypt');
 const { uuid } = require('uuidv4');
 const saltRounds = 10;
 
@@ -146,11 +148,11 @@ const sendOtp = async (_, { email, phone }) => {
     const userData = JSON.parse(JSON.stringify(user));
     const generatedOtp = await generateOtp();
     // Expires in 30 mins
-    const otpExpiration = new Date(new Date().setDate(new Date().getMinutes() + 30));
+    const otpExpiration = new Date(new Date().setMinutes(new Date().getMinutes() + 30));
     const otp = new Otp({ _userId: user._id, otp: generatedOtp, expires: otpExpiration, status: "active" });
     await otp.save();
     if (!otp) {
-        console.error("Error saving otp.");
+        throw new Error(`An error occured while generating OTP. Please try again.`);
     }
     await notification.sendMail({ from: "from@domain.com", to: userData.email, template: EMAIL_OTP({ otp: generatedOtp, name: userData.name }) });
     return { msg: "Otp sent to registered email and phone.", code: 200 };
@@ -166,9 +168,14 @@ const verifyOtp = async (_, { email, phone, otp }) => {
     }
     // console.log(request);
     const user = await User.findOne({ ...request }).exec();
-    const validOtp = await Otp.findOne({ otp, status: "active", expires: { $lte: new Date() } }).exec();
+    // TODO: expires: { $lte: new Date() } Not sure why this is not working
+    const validOtp = await Otp.findOne({ _userId: user._id, otp: otp, status: "active" }).exec();
     if (!validOtp) {
-        console.error("Otp incorrect or invalid.");
+        throw new Error(`Otp entered is invalid.`);
+    }
+    const otpData = JSON.parse(JSON.stringify(validOtp));
+    if (new Date(otpData.expires) < new Date()) {
+        throw new Error(`Otp entered has expired.`);
     }
     const userData = JSON.parse(JSON.stringify(user));
     const token = await authenticate(user._id);
