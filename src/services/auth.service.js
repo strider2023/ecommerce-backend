@@ -5,25 +5,12 @@ const { Otp } = require('../db/otp');
 const { RESET_PASSWORD, EMAIL_OTP } = require('../notifications/templates/auth.templates');
 const notification = require('../notifications');
 
-const moment = require('moment');
 const bcrypt = require('bcrypt');
 const { uuid } = require('uuidv4');
 const saltRounds = 10;
 
 const login = async (_, { email, phone, password }) => {
-    let request = { status: "active" };
-    if (email) {
-        request['email'] = email;
-    }
-    if (phone) {
-        request['phone'] = phone;
-    }
-    // console.log(request);
-    const user = await User.findOne({ ...request }).exec();
-    if (!user) {
-        throw new Error(`Invalid user.`);
-    }
-    const userData = JSON.parse(JSON.stringify(user));
+    const { user, userData } = await getUser({email, phone});
     const passwordValid = await bcrypt.compare(password, userData.password);
     if (!passwordValid) {
         throw new Error(`Invalid password.`);
@@ -68,20 +55,7 @@ const logout = async (_, { refreshToken }) => {
 }
 
 const recoverPassword = async (_, { email, phone }) => {
-    let request = { status: "active" };
-    if (email) {
-        request['email'] = email;
-    }
-    if (phone) {
-        request['phone'] = phone;
-    }
-    // console.log(request);
-    const user = await User.findOne({ ...request }).exec();
-    if (!user) {
-        throw new Error(`Invalid user.`);
-    }
-    const userData = JSON.parse(JSON.stringify(user));
-
+    const { userData } = await getUser({email, phone});
     const recoveryObj = {
         resetUUID: uuid(),
         expires: new Date(new Date().setDate(new Date().getDate() + 2)),
@@ -136,16 +110,9 @@ const resetPassword = async (_, { resetId, password }) => {
 }
 
 const sendOtp = async (_, { email, phone }) => {
-    let request = { status: "active" };
-    if (email) {
-        request['email'] = email;
-    }
-    if (phone) {
-        request['phone'] = phone;
-    }
-    // console.log(request);
-    const user = await User.findOne({ ...request }).exec();
-    const userData = JSON.parse(JSON.stringify(user));
+    const { user, userData } = await getUser({email, phone});
+    // Remove old otps if any
+    await Otp.deleteMany({ expires: { $lte: new Date() } });
     const generatedOtp = await generateOtp();
     // Expires in 30 mins
     const otpExpiration = new Date(new Date().setMinutes(new Date().getMinutes() + 30));
@@ -159,15 +126,8 @@ const sendOtp = async (_, { email, phone }) => {
 }
 
 const verifyOtp = async (_, { email, phone, otp }) => {
-    let request = { status: "active" };
-    if (email) {
-        request['email'] = email;
-    }
-    if (phone) {
-        request['phone'] = phone;
-    }
-    // console.log(request);
-    const user = await User.findOne({ ...request }).exec();
+    const { user, userData } = await getUser({email, phone});
+    await Otp.deleteMany({ expires: { $lte: new Date() } });
     // TODO: expires: { $lte: new Date() } Not sure why this is not working
     const validOtp = await Otp.findOne({ _userId: user._id, otp: otp, status: "active" }).exec();
     if (!validOtp) {
@@ -177,7 +137,6 @@ const verifyOtp = async (_, { email, phone, otp }) => {
     if (new Date(otpData.expires) < new Date()) {
         throw new Error(`Otp entered has expired.`);
     }
-    const userData = JSON.parse(JSON.stringify(user));
     const token = await authenticate(user._id);
     return {
         accessToken: token.accessToken,
@@ -212,6 +171,23 @@ const ssoLogin = async (_, { email, ssoToken, sso }) => {
         avatar: userData.avatar,
         metadata: userData.metadata
     };
+}
+
+const getUser = async ({ email, phone }) => {
+    let request = { status: "active" };
+    if (email) {
+        request['email'] = email;
+    }
+    if (phone) {
+        request['phone'] = phone;
+    }
+    // console.log(request);
+    const user = await User.findOne({ ...request }).exec();
+    if (!user) {
+        throw new Error(`Invalid user.`);
+    }
+    const userData = JSON.parse(JSON.stringify(user));
+    return { user, userData };
 }
 
 module.exports = { login, refreshToken, logout, recoverPassword, resetPassword, sendOtp, verifyOtp, ssoLogin };
